@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.Constants;
+using Microsoft.AspNetCore.Mvc;
 using Model;
 using Services.Services;
 
@@ -7,7 +8,7 @@ namespace Customer.Microservice.Controllers
     [ApiVersion("1.0")]
     [Route("api/{v:apiVersion}/customer")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomerController : BaseController
     {
         private readonly ICustomerService _customerService;
         public CustomerController(ICustomerService customerService)
@@ -20,9 +21,20 @@ namespace Customer.Microservice.Controllers
         {
             var customerId = await _customerService.InsertCustomerAsync(request);
             if (customerId < 1)
-                return BadRequest("Error when inserting data");
+            {
+                content.Response.Success = false;
+                content.Response.Message = "Create Customer Fail!";
+                content.Response.Error_Code = (int?)Enums.NotificationType.BADREQUEST;
+                content.Response.Data = null;
+                return BadRequest(content);
+            }
 
-            return Ok("Customer ID " + customerId + " Created Successfully!");
+            content.Response.Success = true;
+            content.Response.Message = Message.CUSTOMER_CREATED_SUCCESSFULLY;
+            content.Response.Error_Code = null;
+            content.Response.Data = new { customerId };
+            return Ok(content);
+            
         }
     }
 }
