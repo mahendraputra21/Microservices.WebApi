@@ -1,6 +1,7 @@
 ﻿using Common.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using ModelValidator;
 using Services.Services;
 
 namespace Customer.Microservice.Controllers
@@ -16,25 +17,40 @@ namespace Customer.Microservice.Controllers
             _customerService = customerService;
         }
 
+        #region Private Method
+        private IActionResult CreateCustomerErrorResponse(string? errorMessage)
+        {
+            errorContent.ErrorResponse.Title = Message.ERROR_TITLE;
+            errorContent.ErrorResponse.Status = (int?)Enums.NotificationType.BADREQUEST;
+            errorContent.ErrorResponse.Detail = errorMessage;
+            errorContent.ErrorResponse.Instances = HttpContext.Request.Path;
+            return BadRequest(errorContent);
+        }
+
+        private IActionResult CreateCustomerSuccessResponse(int customerId)
+        {
+            content.Response.Success = true;
+            content.Response.Message = Message.CUSTOMER_CREATED_SUCCESSFULLY;
+            content.Response.Data = new { customerId };
+            return Ok(content);
+        }
+        #endregion
+
         [HttpPost]
         public async Task<IActionResult> CreateCustomer(CustomerDTO request)
         {
-            var customerId = await _customerService.InsertCustomerAsync(request);
-            if (customerId < 1)
+            // Validation Checking
+            var validator = new CustomerDTOValidator();
+            if (!validator.Validate(request).IsValid)
             {
-                content.Response.Success = false;
-                content.Response.Message = "Create Customer Fail!";
-                content.Response.Error_Code = (int?)Enums.NotificationType.BADREQUEST;
-                content.Response.Data = null;
-                return BadRequest(content);
+                string? errorMessage = validator.Validate(request).Errors.FirstOrDefault()?.ErrorMessage;
+                return CreateCustomerErrorResponse(errorMessage);
+
             }
 
-            content.Response.Success = true;
-            content.Response.Message = Message.CUSTOMER_CREATED_SUCCESSFULLY;
-            content.Response.Error_Code = null;
-            content.Response.Data = new { customerId };
-            return Ok(content);
-            
+            var customerId = await _customerService.InsertCustomerAsync(request);
+            return CreateCustomerSuccessResponse(customerId);
+
         }
     }
 }

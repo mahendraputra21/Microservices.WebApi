@@ -10,9 +10,6 @@ namespace Model
         [JsonPropertyName("message")]
         public string? Message { get; set; }
 
-        [JsonPropertyName("error_code")]
-        public int? Error_Code { get; set; }
-
         [JsonPropertyName("data")]
         public object? Data { get; set; }
     }

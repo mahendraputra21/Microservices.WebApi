@@ -6,7 +6,7 @@ namespace Common
     {
         public ResponseSingleton()
         {
-            this.Response = new ResponseDTO();
+            Response = new ResponseDTO();
         }
         private static ResponseSingleton? instance;
         public static ResponseSingleton Instance
