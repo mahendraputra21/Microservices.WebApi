@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace Infrastructure.Repositories
@@ -6,6 +7,7 @@ namespace Infrastructure.Repositories
     public interface ICustomerRepository : IRepository<Customer>
     {
         Task<int> InsertCustomerAsync(CustomerDTO customerDTO);
+        Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id);
     }
 
     public class CustomerRepository : Repository<Customer>, ICustomerRepository
@@ -25,6 +27,18 @@ namespace Infrastructure.Repositories
 
             await InsertAsync(customer);
             return customer.Id;
+        }
+
+        public async Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id)
+        {
+            var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            customer.Name = customerDTO.Name;
+            customer.Email = customerDTO.Email;
+            customer.Contact = customerDTO.Contact;
+            customer.City = customerDTO.City;
+
+            await UpdateAsync(customer);
+            return true;
         }
     }
 }

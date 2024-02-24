@@ -6,6 +6,7 @@ namespace Services.Services
     public interface ICustomerService
     {
         Task<int> InsertCustomerAsync(CustomerDTO customerDTO);
+        Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id);
     }
 
     public class CustomerService : ICustomerService
@@ -20,6 +21,11 @@ namespace Services.Services
         public async Task<int> InsertCustomerAsync(CustomerDTO customerDTO)
         {
             return await customerRepository.InsertCustomerAsync(customerDTO);
+        }
+
+        public async Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id)
+        {
+            return await customerRepository.UpdateCustomerAsync(customerDTO, id);
         }
     }
 }

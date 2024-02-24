@@ -1,4 +1,5 @@
 ﻿using Common.Constants;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using ModelValidator;
@@ -34,6 +35,14 @@ namespace Customer.Microservice.Controllers
             content.Response.Data = new { customerId };
             return Ok(content);
         }
+
+        private IActionResult UpdateCustomerSuccessResponse(bool isUpdate)
+        {
+            content.Response.Success = true;
+            content.Response.Message = Message.CUSTOMER_UPDATED_SUCCESSFULLY;
+            content.Response.Data = new { isUpdate };
+            return Ok(content);
+        }
         #endregion
 
         [HttpPost]
@@ -50,7 +59,13 @@ namespace Customer.Microservice.Controllers
 
             var customerId = await _customerService.InsertCustomerAsync(request);
             return CreateCustomerSuccessResponse(customerId);
+        }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateCustomer([FromForm] CustomerDTO request, int id)
+        {
+            var isUpdated = await _customerService.UpdateCustomerAsync(request, id);
+            return UpdateCustomerSuccessResponse(isUpdated);
         }
     }
 }
