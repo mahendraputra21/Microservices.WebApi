@@ -9,6 +9,7 @@ namespace Infrastructure.Repositories
         Task<int> InsertCustomerAsync(CustomerDTO customerDTO);
         Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id);
         Task<bool> DeleteCustomerAsync(int id);
+        Task<List<CustomerDTO>> GetCustomersAsync();
     }
 
     public class CustomerRepository : Repository<Customer>, ICustomerRepository
@@ -28,6 +29,27 @@ namespace Infrastructure.Repositories
             }
 
             return false;
+        }
+
+        public async Task<List<CustomerDTO>> GetCustomersAsync()
+        {
+            var customers = await db.Customers.ToListAsync();
+
+            List<CustomerDTO> listCustomerDTO = [];
+            foreach (var customer in customers)
+            {
+                CustomerDTO customerDTO = new()
+                {
+                    Name = customer.Name,
+                    Contact = customer.Contact,
+                    City = customer.City,
+                    Email = customer.Email,
+                };
+
+                listCustomerDTO.Add(customerDTO);
+            }
+
+            return listCustomerDTO;
         }
 
         public async Task<int> InsertCustomerAsync(CustomerDTO customerDTO)
