@@ -8,7 +8,7 @@ using Services.Services;
 namespace Customer.Microservice.Controllers
 {
     [ApiVersion("1.0")]
-    [Route("api/{v:apiVersion}/customer")]
+    [Route("api/{v:apiVersion}/customers")]
     [ApiController]
     public class CustomerController : BaseController
     {
@@ -27,7 +27,6 @@ namespace Customer.Microservice.Controllers
             errorContent.ErrorResponse.Instances = HttpContext.Request.Path;
             return BadRequest(errorContent);
         }
-
         private IActionResult CreateCustomerSuccessResponse(int customerId)
         {
             content.Response.Success = true;
@@ -35,7 +34,6 @@ namespace Customer.Microservice.Controllers
             content.Response.Data = new { customerId };
             return Ok(content);
         }
-
         private IActionResult UpdateCustomerSuccessResponse(bool isUpdate)
         {
             content.Response.Success = true;
@@ -43,7 +41,6 @@ namespace Customer.Microservice.Controllers
             content.Response.Data = new { isUpdate };
             return Ok(content);
         }
-
         private IActionResult DeleteCustomerSuccessResponse(bool isDelete)
         {
             content.Response.Success = true;
@@ -68,18 +65,29 @@ namespace Customer.Microservice.Controllers
             return CreateCustomerSuccessResponse(customerId);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer([FromForm] CustomerDTO request, int id)
         {
             var isUpdated = await _customerService.UpdateCustomerAsync(request, id);
             return UpdateCustomerSuccessResponse(isUpdated);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerAsync(int id)
         {
             var isDeleted = await _customerService.DeleteCustomerAsync(id);
             return DeleteCustomerSuccessResponse(isDeleted);
+        }
+
+        [HttpGet()]
+        public async Task<IActionResult> GetCustomersAsync()
+        {
+            var customers = await _customerService.GetCustomersAsync();
+
+            content.Response.Success = true;
+            content.Response.Message = Message.OK_MESSAGE;
+            content.Response.Data = new { customers };
+            return Ok(content);
         }
     }
 }
