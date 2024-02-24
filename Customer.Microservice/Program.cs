@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -12,10 +14,11 @@ namespace Customer.Microservice
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
 
+            //Configure Core DI Services
             builder.Services.AddInfrastructure();
             builder.Services.AddLogicServices();
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            
             builder.Services.AddEndpointsApiExplorer();
            
             //API Versioning
@@ -26,6 +29,10 @@ namespace Customer.Microservice
                 o.DefaultApiVersion = new ApiVersion(1, 0);
             });
 
+            // Configure Model Validator
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddFluentValidationClientsideAdapters();
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
             #region Swagger
             builder.Services.AddSwaggerGen(c =>
@@ -47,7 +54,7 @@ namespace Customer.Microservice
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer.Microservice");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Customer Microservice API v1");
                 });
             }
 
