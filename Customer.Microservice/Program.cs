@@ -1,9 +1,16 @@
+using Common.Constants;
+using Common.Exceptions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Configuration;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Model;
+using Newtonsoft.Json;
+using NuGet.Common;
 using Services.Configuration;
+using static Common.Constants.Enums;
 
 namespace Customer.Microservice
 {
@@ -58,8 +65,61 @@ namespace Customer.Microservice
                 });
             }
 
-            app.UseAuthorization();
+            // Configure Custom ApiException
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+                    var errorFeature = context.Features.Get<IExceptionHandlerFeature>();
+                    ApiException? ex;
+                    const string genericErrorMessage = "Oops something went wrong, Please try again!";
+                    if(errorFeature != null && errorFeature.Error.GetType() == typeof(ApiException))
+                    {
+                        ex = errorFeature.Error as ApiException;
+                    }
+                    else
+                    {
+                        var errMsg = errorFeature == null ? "" : errorFeature.Error.Message;
+                        ex = new ApiException(errMsg,  errorFeature.Error);
+                    }
 
+                    if (ex != null && !ex.IsHandled && ex.StatusCode == NotificationTypes.INTERNALSERVERERROR)
+                    {
+                       // WriteToSeriLogs(ex, context)
+                    }
+
+                    ErrorResponseDTO errorResponseDTO = new();
+                    errorResponseDTO.Title = Message.ERROR_TITLE;
+                    errorResponseDTO.Instances = null;
+                    errorResponseDTO.Status = (int)ex.StatusCode;
+
+                    context.Response.StatusCode = (int)ex.StatusCode;
+
+                    context.Response.ContentType = "application/json";
+                    object response;
+
+                    if(ex != null && ex.StatusCode == NotificationTypes.INTERNALSERVERERROR)
+                    {
+                        errorResponseDTO.Detail = genericErrorMessage;
+                    }
+                    else
+                    {
+                        errorResponseDTO.Detail = ex == null ? "" : ex.ErrorMessage;
+                    }
+
+                    response = new { errorResponse = errorResponseDTO };
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+                });
+            });
+
+
+            //app.Use((context, next) =>
+            //{
+            //    context.Response.Headers.Remove("Server");
+            //    return next();
+            //}); 
+
+            app.UseAuthorization();
 
             app.MapControllers();
 

@@ -22,7 +22,7 @@ namespace Customer.Microservice.Controllers
         private IActionResult CreateCustomerErrorResponse(string? errorMessage)
         {
             errorContent.ErrorResponse.Title = Message.ERROR_TITLE;
-            errorContent.ErrorResponse.Status = (int?)Enums.NotificationType.BADREQUEST;
+            errorContent.ErrorResponse.Status = (int?)Enums.NotificationTypes.BADREQUEST;
             errorContent.ErrorResponse.Detail = errorMessage;
             errorContent.ErrorResponse.Instances = HttpContext.Request.Path;
             return BadRequest(errorContent);

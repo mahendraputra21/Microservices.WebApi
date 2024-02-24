@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Common.Exceptions;
+using Domain;
 using Microsoft.EntityFrameworkCore;
 using Model;
 
@@ -23,21 +24,25 @@ namespace Infrastructure.Repositories
         public async Task<bool> DeleteCustomerAsync(int id)
         {
             var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
-            if(customer != null) 
-            {
-                await DeleteAsync(customer);
-                return true;
-            }
 
-            return false;
+            if (customer == null)
+                throw new ApiException(
+                    "Customer not found", isHandled: false,
+                    statusCode: Common.Constants.Enums.NotificationTypes.BADREQUEST);
+
+            await DeleteAsync(customer);
+            return true;
+
         }
 
         public async Task<CustomerDTO> GetCustomerByIdAsync(int id)
         {
             var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
-            if(customer == null) 
-                return new CustomerDTO();
+            if(customer == null)
+                throw new ApiException(
+                    "Customer not found", isHandled: false,
+                    statusCode: Common.Constants.Enums.NotificationTypes.BADREQUEST);
 
             CustomerDTO customerDTO = new()
             {
@@ -55,7 +60,9 @@ namespace Infrastructure.Repositories
             var customers = await db.Customers.ToListAsync();
 
             if(customers.Count < 1)
-                return [];
+                throw new ApiException(
+                   "Customer data is empty", isHandled: false,
+                   statusCode: Common.Constants.Enums.NotificationTypes.BADREQUEST);
 
             List<CustomerDTO> listCustomerDTO = [];
             foreach (var customer in customers)
@@ -78,10 +85,10 @@ namespace Infrastructure.Repositories
         {
             Customer customer = new()
             {
-                Name = customerDTO.Name,
-                Email = customerDTO.Email,
-                Contact = customerDTO.Contact,
-                City = customerDTO.City
+                Name = customerDTO.Name == null ? "" : customerDTO.Name,
+                Email = customerDTO.Email == null ? "" : customerDTO.Email,
+                Contact = customerDTO.Contact == null ? "" : customerDTO.Contact,
+                City = customerDTO.City == null ? "" : customerDTO.City,
             };
 
             await InsertAsync(customer);
@@ -91,10 +98,16 @@ namespace Infrastructure.Repositories
         public async Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id)
         {
             var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
-            customer.Name = customerDTO.Name;
-            customer.Email = customerDTO.Email;
-            customer.Contact = customerDTO.Contact;
-            customer.City = customerDTO.City;
+
+            if (customer == null)
+                throw new ApiException(
+                    "Customer not found", isHandled: false,
+                    statusCode: Common.Constants.Enums.NotificationTypes.BADREQUEST);
+
+            customer.Name = customerDTO.Name == null ? "": customerDTO.Name;
+            customer.Email = customerDTO.Email == null ? "" : customerDTO.Email;
+            customer.Contact = customerDTO.Contact == null ? "" : customerDTO.Contact;
+            customer.City = customerDTO.City == null ? "" : customerDTO.City;
 
             await UpdateAsync(customer);
             return true;
