@@ -8,6 +8,7 @@ namespace Infrastructure.Repositories
     {
         Task<int> InsertCustomerAsync(CustomerDTO customerDTO);
         Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id);
+        Task<bool> DeleteCustomerAsync(int id);
     }
 
     public class CustomerRepository : Repository<Customer>, ICustomerRepository
@@ -15,6 +16,18 @@ namespace Infrastructure.Repositories
         public CustomerRepository(ApplicationDbContext db) : base(db)
         {
             
+        }
+
+        public async Task<bool> DeleteCustomerAsync(int id)
+        {
+            var customer = await db.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            if(customer != null) 
+            {
+                await DeleteAsync(customer);
+                return true;
+            }
+
+            return false;
         }
 
         public async Task<int> InsertCustomerAsync(CustomerDTO customerDTO)
