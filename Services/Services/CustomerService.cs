@@ -7,6 +7,7 @@ namespace Services.Services
     {
         Task<int> InsertCustomerAsync(CustomerDTO customerDTO);
         Task<bool> UpdateCustomerAsync(CustomerDTO customerDTO, int id);
+        Task<bool> DeleteCustomerAsync(int id);
     }
 
     public class CustomerService : ICustomerService
@@ -16,6 +17,11 @@ namespace Services.Services
         public CustomerService(ICustomerRepository customerRepository)
         {
             this.customerRepository = customerRepository;
+        }
+
+        public async Task<bool> DeleteCustomerAsync(int id)
+        {
+            return await customerRepository.DeleteCustomerAsync(id);
         }
 
         public async Task<int> InsertCustomerAsync(CustomerDTO customerDTO)
