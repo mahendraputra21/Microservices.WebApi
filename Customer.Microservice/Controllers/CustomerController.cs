@@ -89,5 +89,16 @@ namespace Customer.Microservice.Controllers
             content.Response.Data = new { customers };
             return Ok(content);
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCustomerByIdAsync(int id)
+        {
+            var customer = await _customerService.GetCustomerByIdAsync(id);
+
+            content.Response.Success = true;
+            content.Response.Message = Message.OK_MESSAGE;
+            content.Response.Data = new { customer };
+            return Ok(content);
+        }
     }
 }
