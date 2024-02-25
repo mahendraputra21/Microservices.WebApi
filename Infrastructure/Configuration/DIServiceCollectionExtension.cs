@@ -1,4 +1,5 @@
-﻿using Infrastructure.Repositories;
+﻿using Infrastructure.AutoMapper;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Configuration
@@ -8,6 +9,9 @@ namespace Infrastructure.Configuration
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IAutoMapperProfile, AutoMapperProfile>();
+
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             return services;
         }

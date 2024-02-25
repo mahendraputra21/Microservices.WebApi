@@ -36,6 +36,7 @@ namespace Customer.Microservice
                 o.DefaultApiVersion = new ApiVersion(1, 0);
             });
 
+           
             // Configure Model Validator
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.AddFluentValidationClientsideAdapters();

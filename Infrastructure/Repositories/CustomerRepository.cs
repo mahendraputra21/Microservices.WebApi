@@ -1,5 +1,7 @@
-﻿using Common.Exceptions;
+﻿using AutoMapper;
+using Common.Exceptions;
 using Domain;
+using Infrastructure.AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Model;
 
@@ -16,9 +18,12 @@ namespace Infrastructure.Repositories
 
     public class CustomerRepository : Repository<Customer>, ICustomerRepository
     {
-        public CustomerRepository(ApplicationDbContext db) : base(db)
+        private readonly IMapper _mapper;
+        public CustomerRepository(
+            ApplicationDbContext db,
+            IAutoMapperProfile autoMapperProfile) : base(db)
         {
-            
+            _mapper = autoMapperProfile.Configuration;
         }
 
         public async Task<bool> DeleteCustomerAsync(int id)
@@ -32,7 +37,6 @@ namespace Infrastructure.Repositories
 
             await DeleteAsync(customer);
             return true;
-
         }
 
         public async Task<CustomerDTO> GetCustomerByIdAsync(int id)
@@ -44,15 +48,7 @@ namespace Infrastructure.Repositories
                     "Customer not found", isHandled: false,
                     statusCode: Common.Constants.Enums.NotificationTypes.BADREQUEST);
 
-            CustomerDTO customerDTO = new()
-            {
-                Name = customer.Name,
-                Contact = customer.Contact,
-                City = customer.City,
-                Email = customer.Email
-            };
-
-            return customerDTO;
+            return _mapper.Map<CustomerDTO>(customer);
         }
 
         public async Task<List<CustomerDTO>> GetCustomersAsync()
@@ -64,33 +60,12 @@ namespace Infrastructure.Repositories
                    "Customer data is empty", isHandled: false,
                    statusCode: Common.Constants.Enums.NotificationTypes.BADREQUEST);
 
-            List<CustomerDTO> listCustomerDTO = [];
-            foreach (var customer in customers)
-            {
-                CustomerDTO customerDTO = new()
-                {
-                    Name = customer.Name,
-                    Contact = customer.Contact,
-                    City = customer.City,
-                    Email = customer.Email,
-                };
-
-                listCustomerDTO.Add(customerDTO);
-            }
-
-            return listCustomerDTO;
+            return _mapper.Map<List<CustomerDTO>>(customers);
         }
 
         public async Task<int> InsertCustomerAsync(CustomerDTO customerDTO)
         {
-            Customer customer = new()
-            {
-                Name = customerDTO.Name == null ? "" : customerDTO.Name,
-                Email = customerDTO.Email == null ? "" : customerDTO.Email,
-                Contact = customerDTO.Contact == null ? "" : customerDTO.Contact,
-                City = customerDTO.City == null ? "" : customerDTO.City,
-            };
-
+            var customer = _mapper.Map<Customer>(customerDTO);
             await InsertAsync(customer);
             return customer.Id;
         }

@@ -3,7 +3,7 @@
 namespace Model
 {
     public class CustomerDTO
-    {
+    {        
         [JsonPropertyName("customerName")]
         public string? Name { get; set; }
 
