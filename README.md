@@ -1,8 +1,29 @@
-## Clean Architecture using Repository Design Pattern
-## Fluent Validation On DTOModel
-## Standard Success and Error API Responses
+# Clean Architecture using Repository Design Pattern
+## Features :
+### Fluent Validation On DTOModel
+```
+ RuleFor(x => x.Name)
+     .NotNull().WithMessage("Customer Name is empty")
+     .NotEmpty().WithMessage("Customer Name is empty");
+ 
+ RuleFor(x => x.Contact)
+     .NotNull().WithMessage("Mobile Number is empty.")
+     .NotEmpty().WithMessage("Mobile Number is empty.")
+     .Matches(@"^[0-9]{10}$").WithMessage("Mobile Number is invalid.");
 
-### Success Response
+ RuleFor(x => x.Email)
+     .NotNull().WithMessage("Customer Email is empty")
+     .NotEmpty().WithMessage("Customer Email is empty")
+     .EmailAddress().WithMessage("Email Address is invalid");
+```
+### AutoMapper  
+```
+ CreateMap<Customer, CustomerDTO>().ReverseMap();
+ _mapper.Map<List<CustomerDTO>>(customers);
+```
+### Standard Success and Error API Responses
+
+#### Success Response
 ```json
 {
   "response": {
@@ -14,7 +35,7 @@
   }
 }
 ```
-### Error catch by Model validator
+#### Error catch by Model validator
 ```json
 {
   "errorResponse": {
@@ -26,7 +47,7 @@
 }
 ```
 
-### Error catch by API Exception
+#### Error catch by API Exception
 ```json
 {
   "response": {
