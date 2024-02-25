@@ -33,10 +33,10 @@ namespace Infrastructure.Repositories
             db.SaveChanges();
         }
 
-        public void Delete(object ID)
+        public void Delete(object id)
         {
-            T entity = db.Set<T>().Find(ID);
-            this.Delete(entity);
+            T entity = db.Set<T>().Find(id);
+            Delete(entity);
         }
 
         public async Task DeleteAsync(T entity)
