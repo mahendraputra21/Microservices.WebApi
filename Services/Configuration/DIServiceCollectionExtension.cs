@@ -8,6 +8,7 @@ namespace Services.Configuration
         public static IServiceCollection AddLogicServices(this IServiceCollection services)
         {
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IProductService, ProductService>();
             return services;
         }
     }

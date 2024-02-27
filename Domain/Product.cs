@@ -22,16 +22,16 @@ namespace Domain
         [Column(Order = 7, TypeName = "VARCHAR(200)")]
         public string? Description { get; set; }
 
-        [Column(Order = 8, TypeName ="DateTime")]
-        public DateTime CreatedDate { get; set; }
+        //[Column(Order = 8, TypeName ="DateTime")]
+        //public DateTime CreatedDate { get; set; }
 
-        [Column(Order = 9, TypeName = "VARCHAR(50)")]
-        public string? CreatedBy { get; set; }
+        //[Column(Order = 9, TypeName = "VARCHAR(50)")]
+        //public string? CreatedBy { get; set; }
 
-        [Column(Order = 10, TypeName = "DateTime")]
-        public DateTime UpdatedDate { get; set; }
+        //[Column(Order = 10, TypeName = "DateTime")]
+        //public DateTime UpdatedDate { get; set; }
 
-        [Column(Order = 11, TypeName = "VARCHAR(50)")]
-        public string? UpdatedBy { get; set; }
+        //[Column(Order = 11, TypeName = "VARCHAR(50)")]
+        //public string? UpdatedBy { get; set; }
     }
 }

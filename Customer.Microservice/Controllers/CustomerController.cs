@@ -1,4 +1,6 @@
 ﻿using Common.Constants;
+using Common.Helpers;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using ModelValidator;
@@ -17,65 +19,54 @@ namespace Customer.Microservice.Controllers
             _customerService = customerService;
         }
 
-        #region Private Method
-        private IActionResult CreateCustomerErrorResponse(string? errorMessage)
-        {
-            errorContent.ErrorResponse.Title = Message.ERROR_TITLE;
-            errorContent.ErrorResponse.Status = (int?)Enums.NotificationTypes.BADREQUEST;
-            errorContent.ErrorResponse.Detail = errorMessage;
-            errorContent.ErrorResponse.Instances = HttpContext.Request.Path;
-            return BadRequest(errorContent);
-        }
-        private IActionResult CreateCustomerSuccessResponse(int customerId)
-        {
-            content.Response.Success = true;
-            content.Response.Message = Message.CUSTOMER_CREATED_SUCCESSFULLY;
-            content.Response.Data = new { customerId };
-            return Ok(content);
-        }
-        private IActionResult UpdateCustomerSuccessResponse(bool isUpdate)
-        {
-            content.Response.Success = true;
-            content.Response.Message = Message.CUSTOMER_UPDATED_SUCCESSFULLY;
-            content.Response.Data = new { isUpdate };
-            return Ok(content);
-        }
-        private IActionResult DeleteCustomerSuccessResponse(bool isDelete)
-        {
-            content.Response.Success = true;
-            content.Response.Message = Message.CUSTOMER_DELETE_SUCCESSFULLY;
-            content.Response.Data = new { isDelete };
-            return Ok(content);
-        }
-        #endregion
-
         [HttpPost]
         public async Task<IActionResult> CreateCustomer(CustomerDTO request)
         {
+            
+            CustomerDTOValidator validator = new();
+            ApiResponseHelper apiResponseHelper = new();
+            
             // Validation Checking
-            var validator = new CustomerDTOValidator();
             if (!validator.Validate(request).IsValid)
             {
-                string? errorMessage = validator.Validate(request).Errors.FirstOrDefault()?.ErrorMessage;
-                return CreateCustomerErrorResponse(errorMessage);
+                string? errorMessage = validator.Validate(request).Errors
+                                               .FirstOrDefault()?.ErrorMessage;
+
+                var errorContent = apiResponseHelper.ApiErrorResponse(
+                    errorMessage,
+                    HttpContext.Request.Path);
+                return BadRequest(errorContent);
             }
 
-            var customerId = await _customerService.InsertCustomerAsync(request);
-            return CreateCustomerSuccessResponse(customerId);
+            await _customerService.InsertCustomerAsync(request);
+            var successContent = apiResponseHelper
+                .ApiSuccessResponse(Message.PRODUCT_CREATED_SUCCESSFULLY);
+
+            return Ok(successContent);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer([FromForm] CustomerDTO request, int id)
         {
-            var isUpdated = await _customerService.UpdateCustomerAsync(request, id);
-            return UpdateCustomerSuccessResponse(isUpdated);
+            await _customerService.UpdateCustomerAsync(request, id);
+            
+            ApiResponseHelper apiResponseHelper = new();
+            var successContent = apiResponseHelper
+               .ApiSuccessResponse(Message.CUSTOMER_UPDATED_SUCCESSFULLY);
+
+            return Ok(successContent);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerAsync(int id)
         {
-            var isDeleted = await _customerService.DeleteCustomerAsync(id);
-            return DeleteCustomerSuccessResponse(isDeleted);
+            await _customerService.DeleteCustomerAsync(id);
+
+            ApiResponseHelper apiResponseHelper = new();
+            var successContent = apiResponseHelper
+              .ApiSuccessResponse(Message.CUSTOMER_DELETE_SUCCESSFULLY);
+
+            return Ok(successContent);
         }
 
         [HttpGet()]
@@ -83,10 +74,10 @@ namespace Customer.Microservice.Controllers
         {
             var customers = await _customerService.GetCustomersAsync();
 
-            content.Response.Success = true;
-            content.Response.Message = Message.OK_MESSAGE;
-            content.Response.Data = new { customers };
-            return Ok(content);
+            ApiResponseHelper apiResponseHelper = new();
+            var successContent = apiResponseHelper
+             .ApiGetSuccessResponse(customers);
+            return Ok(successContent);
         }
 
         [HttpGet("{id}")]
@@ -94,10 +85,10 @@ namespace Customer.Microservice.Controllers
         {
             var customer = await _customerService.GetCustomerByIdAsync(id);
 
-            content.Response.Success = true;
-            content.Response.Message = Message.OK_MESSAGE;
-            content.Response.Data = new { customer };
-            return Ok(content);
+            ApiResponseHelper apiResponseHelper = new();
+            var successContent = apiResponseHelper
+             .ApiGetSuccessResponse(customer);
+            return Ok(successContent);
         }
     }
 }
