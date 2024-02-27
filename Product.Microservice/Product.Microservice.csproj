@@ -11,6 +11,13 @@
 		<WarningsAsErrors>NU1605</WarningsAsErrors>
 		<NoWarn>1701;1702; 1591</NoWarn>
 	</PropertyGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="Entities\**" />
+	  <Content Remove="Entities\**" />
+	  <EmbeddedResource Remove="Entities\**" />
+	  <None Remove="Entities\**" />
+	</ItemGroup>
 
 
 	<ItemGroup>
@@ -39,11 +46,6 @@
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 		<ProjectReference Include="..\ModelValidator\ModelValidator.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <Folder Include="Entities\" />
 	</ItemGroup>
 
 
