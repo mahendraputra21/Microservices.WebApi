@@ -1,5 +1,4 @@
 ﻿using Common.Constants;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using ModelValidator;

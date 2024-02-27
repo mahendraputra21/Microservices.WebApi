@@ -4,17 +4,5 @@
         <name>Product.Microservice</name>
     </assembly>
     <members>
-        <member name="T:Product.Microservice.Migrations.Initial">
-            <inheritdoc />
-        </member>
-        <member name="M:Product.Microservice.Migrations.Initial.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Product.Microservice.Migrations.Initial.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
-            <inheritdoc />
-        </member>
-        <member name="M:Product.Microservice.Migrations.Initial.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
-            <inheritdoc />
-        </member>
     </members>
 </doc>
