@@ -113,13 +113,6 @@ namespace Customer.Microservice
                 });
             });
 
-
-            //app.Use((context, next) =>
-            //{
-            //    context.Response.Headers.Remove("Server");
-            //    return next();
-            //}); 
-
             app.UseAuthorization();
 
             app.UseHttpsRedirection();
