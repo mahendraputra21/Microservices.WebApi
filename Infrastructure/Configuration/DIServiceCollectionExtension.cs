@@ -13,6 +13,7 @@ namespace Infrastructure.Configuration
             services.AddScoped<IAutoMapperProfile, AutoMapperProfile>();
 
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
             return services;
         }
     }

@@ -14,6 +14,7 @@ namespace Infrastructure.AutoMapper
         public AutoMapperProfile()
         {
             CreateMap<Customer, CustomerDTO>().ReverseMap();
+            CreateMap<Product, ProductDTO>().ReverseMap();
         }
 
         public IMapper Configuration => new MapperConfiguration(cfg => cfg.AddProfile(this)).CreateMapper();
